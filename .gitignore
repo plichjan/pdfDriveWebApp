@@ -35,3 +35,5 @@ fabric.properties
 
 .idea/
 pdfDriveWebApp.iml
+
+src/main/resources/app.properties
