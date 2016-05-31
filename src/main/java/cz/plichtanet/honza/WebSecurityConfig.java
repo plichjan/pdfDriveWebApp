@@ -12,14 +12,15 @@ import javax.sql.DataSource;
 @Configuration
 @EnableWebSecurity
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
-//    @Autowired
-//    private DataSource dataSource;
+    @Autowired
+    private DataSource dataSource;
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
             .authorizeRequests()
-                .antMatchers("/", "/index.jsp").hasRole("USER")
+                .antMatchers("/.well-known/**").permitAll()
+                .antMatchers("/", "/robots.txt", "/index.jsp").permitAll()
                 .antMatchers("/helloagain").hasRole("ADMIN")
                 .anyRequest().authenticated()
                 .and()
@@ -35,10 +36,14 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Autowired
     public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
+/*
         auth
             .inMemoryAuthentication()
                 .withUser("user").password("password").roles("USER")
                 .and()
                 .withUser("jenda").password("password").roles("USER","ADMIN");
+*/
+        auth.jdbcAuthentication().dataSource(dataSource);
+
     }
 }

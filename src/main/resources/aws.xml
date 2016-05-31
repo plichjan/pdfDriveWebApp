@@ -22,7 +22,6 @@
     <aws-context:context-region region="us-west-2"/>
     <aws-context:context-resource-loader/>
 
-<!--
     <jdbc:data-source
             db-instance-identifier="userdb"
             database-name="user_db"
@@ -30,5 +29,4 @@
             read-replica-support="true"
     >
     </jdbc:data-source>
--->
 </beans>

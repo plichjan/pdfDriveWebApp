@@ -9,6 +9,7 @@
         <spring-cloud-version>1.1.0.RELEASE</spring-cloud-version>
         <spring-version>4.2.6.RELEASE</spring-version>
         <spring-security-version>4.1.0.RELEASE</spring-security-version>
+        <log4j-version>1.2.17</log4j-version>
     </properties>
     <name>pdfDriveWebApp</name>
 
@@ -46,9 +47,21 @@
         </dependency>
 
         <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>5.1.30</version>
+        </dependency>
+
+        <dependency>
             <groupId>com.itextpdf</groupId>
             <artifactId>itextpdf</artifactId>
             <version>5.5.9</version>
+        </dependency>
+
+        <dependency>
+            <groupId>log4j</groupId>
+            <artifactId>log4j</artifactId>
+            <version>${log4j-version}</version>
         </dependency>
 
         <dependency>

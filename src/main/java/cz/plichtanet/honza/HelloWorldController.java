@@ -19,18 +19,21 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.util.Date;
 
 @Controller
-@RequestMapping("/")
 public class HelloWorldController {
     private static final String DOWNLOAD = "/download/";
     private static final String S3_PDF_DRIVE_ROOT = "s3://pdf-drive-root/";
 
     @Autowired
     private ResourcePatternResolver resourcePatternResolver;
+
+    @Autowired
+    private JendaS3Folder s3Folder;
 
     @RequestMapping(value = "/login", method = RequestMethod.GET)
     public ModelAndView login(@RequestParam(value = "error", required = false) String error,
@@ -50,12 +53,6 @@ public class HelloWorldController {
 
     }
 
-    @RequestMapping(method = RequestMethod.GET)
-    public String sayHello(ModelMap model) {
-        model.addAttribute("greeting", "Hello World from Spring 4 MVC");
-        return "welcome";
-    }
-
     @RequestMapping(value = "/helloagain", method = RequestMethod.GET)
     public String sayHelloAgain(ModelMap model) {
         model.addAttribute("greeting", "Hello World Again, from Spring 4 MVC");
@@ -68,14 +65,20 @@ public class HelloWorldController {
         return "pdfs";
     }
 
+    @RequestMapping(value = "/dir/**/", method = RequestMethod.GET)
+    public String showAllDir(HttpServletRequest request, ModelMap model) throws IOException {
+        final String parent = decodePathSuffix(request, "/dir/");
+        model.addAttribute("dir", s3Folder.getFolderList(parent));
+        return "dir";
+    }
+
     @RequestMapping(value = DOWNLOAD + "**/*.pdf", method = RequestMethod.GET)
     public ResponseEntity<byte[]> download(HttpServletRequest request) throws IOException, DocumentException {
-        String filename = request.getRequestURI().substring(request.getContextPath().length() + DOWNLOAD.length());
-        filename = URLDecoder.decode(filename, "UTF-8");
+        String filename = decodePathSuffix(request, DOWNLOAD);
         Resource resource = this.resourcePatternResolver.getResource(S3_PDF_DRIVE_ROOT + filename);
 
         ByteArrayOutputStream dst = new ByteArrayOutputStream();
-        String text = String.format("Tvoje IP adresa: %2$s, uzivate: %3$s, %1$tF %1$tT %1$tz", new Date(), request.getRemoteAddr(), request.getRemoteUser());
+        String text = String.format("IP: %2$s, uzivatel: %3$s, %1$tF %1$tT %1$tz", new Date(), request.getRemoteAddr(), request.getRemoteUser());
         TransparentWatermark.manipulatePdf(resource.getInputStream(), dst, text);
         byte[] bytes = dst.toByteArray();
 
@@ -87,5 +90,11 @@ public class HelloWorldController {
 
         return new ResponseEntity<>(bytes, httpHeaders, HttpStatus.OK);
     }
+
+    private String decodePathSuffix(HttpServletRequest request, String prefix) throws UnsupportedEncodingException {
+        final String suffix = request.getRequestURI().substring(request.getContextPath().length() + prefix.length());
+        return URLDecoder.decode(suffix, "UTF-8");
+    }
+
 
 }
