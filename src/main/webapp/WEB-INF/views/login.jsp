@@ -3,33 +3,48 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <html>
 <head>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7"
+          crossorigin="anonymous">
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-T8Gy5hrqNKT+hzMclPo118YTQO6cYprQmhrYwIiQ/3axmI1hQomh7Ud2hPOy8SP1"
+          crossorigin="anonymous">
+    <link href="<c:url value='/static/css/app.css' />" rel="stylesheet"/>
     <title>Přihlašovací obrazovka</title>
 </head>
 <body>
-<c:url value="/login" var="loginUrl"/>
-<form action="${loginUrl}" method="post">
-    <c:if test="${param.error != null}">
-        <p>
-            Špatné přihlašovací jméno nebo heslo.
-        </p>
-    </c:if>
-    <c:if test="${param.logout != null}">
-        <p>
-            Byli jste odhlášeni.
-        </p>
-    </c:if>
-    <p>
-        <label for="username">Přihlašovací jméno</label>
-        <input type="text" id="username" name="username"/>
-    </p>
-    <p>
-        <label for="password">Heslo</label>
-        <input type="password" id="password" name="password"/>
-    </p>
-    <input type="hidden"
-           name="${_csrf.parameterName}"
-           value="${_csrf.token}"/>
-    <button type="submit" class="btn">Přihlásit se</button>
-</form>
+<div id="mainWrapper">
+    <div class="login-container">
+        <div class="login-card">
+            <div class="login-form">
+                <c:url var="loginUrl" value="/login"/>
+                <form action="${loginUrl}" method="post" class="form-horizontal">
+                    <c:if test="${param.error != null}">
+                        <div class="alert alert-danger">
+                            <p>Špatné přihlašovací jméno nebo heslo.</p>
+                        </div>
+                    </c:if>
+                    <c:if test="${param.logout != null}">
+                        <div class="alert alert-success">
+                            <p>Byli jste odhlášeni.</p>
+                        </div>
+                    </c:if>
+                    <div class="input-group input-sm">
+                        <label class="input-group-addon" for="username"><i class="fa fa-user"></i></label>
+                        <input type="text" class="form-control" id="username" name="username" placeholder="Zadejte uživatelské jméno tj. email" required>
+                    </div>
+                    <div class="input-group input-sm">
+                        <label class="input-group-addon" for="password"><i class="fa fa-lock"></i></label>
+                        <input type="password" class="form-control" id="password" name="password" placeholder="Zadejte heslo" required>
+                    </div>
+                    <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+
+                    <div class="form-actions">
+                        <input type="submit"
+                               class="btn btn-block btn-primary btn-default" value="Log in">
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
 </body>
 </html>
