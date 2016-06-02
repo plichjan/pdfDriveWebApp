@@ -19,8 +19,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http
             .authorizeRequests()
-                .antMatchers("/.well-known/**").permitAll()
-                .antMatchers("/", "/robots.txt", "/index.jsp").permitAll()
+                .antMatchers("/", "/robots.txt", "/index.jsp", "/.well-known/**", "/static/**").permitAll()
                 .antMatchers("/helloagain").hasRole("ADMIN")
                 .anyRequest().authenticated()
                 .and()
@@ -31,7 +30,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
             .logout()
                 .permitAll()
                 .and()
-            .csrf().disable();
+            .csrf();
     }
 
     @Autowired
