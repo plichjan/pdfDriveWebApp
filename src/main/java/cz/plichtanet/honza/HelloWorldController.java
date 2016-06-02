@@ -41,11 +41,11 @@ public class HelloWorldController {
 
         ModelAndView model = new ModelAndView();
         if (error != null) {
-            model.addObject("error", "Invalid username and password!");
+            model.addObject("error", "Neplatné uživatelské jmeno a heslo!");
         }
 
         if (logout != null) {
-            model.addObject("msg", "You've been logged out successfully.");
+            model.addObject("msg", "Byli jste ušpěšně odhlášeni");
         }
         model.setViewName("login");
 
@@ -63,6 +63,12 @@ public class HelloWorldController {
     public String showAllPdfs(ModelMap model) throws IOException {
         model.addAttribute("pdfs", this.resourcePatternResolver.getResources(S3_PDF_DRIVE_ROOT + "**/*.pdf"));
         return "pdfs";
+    }
+
+    @RequestMapping(value = "/dir", method = RequestMethod.GET)
+    public String showRootDir(HttpServletRequest request, ModelMap model) throws IOException {
+        model.addAttribute("dir", s3Folder.getFolderList(""));
+        return "dir";
     }
 
     @RequestMapping(value = "/dir/**/", method = RequestMethod.GET)
