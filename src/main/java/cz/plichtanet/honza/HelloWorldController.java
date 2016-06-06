@@ -1,5 +1,6 @@
 package cz.plichtanet.honza;
 
+import com.amazonaws.util.IOUtils;
 import com.itextpdf.text.DocumentException;
 import cz.plichtanet.honza.dao.IUserDao;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,6 +38,7 @@ import java.util.List;
 @Controller
 public class HelloWorldController {
     private static final String DOWNLOAD = "/download/";
+    private static final String HTML = "/html/";
     private static final String S3_PDF_DRIVE_ROOT = "s3://pdf-drive-root/";
 
     @Autowired
@@ -143,6 +145,20 @@ public class HelloWorldController {
         httpHeaders.setContentType(MediaType.parseMediaType("application/pdf"));
         httpHeaders.setContentLength(bytes.length);
         httpHeaders.setContentDispositionFormData("attachment", fileName);
+
+        return new ResponseEntity<>(bytes, httpHeaders, HttpStatus.OK);
+    }
+
+    @RequestMapping(value = HTML + "**/*.html", method = RequestMethod.GET)
+    public ResponseEntity<byte[]> html(HttpServletRequest request) throws IOException, DocumentException {
+        String filename = decodePathSuffix(request, HTML);
+        Resource resource = this.resourcePatternResolver.getResource("s3:/" + HTML + filename);
+
+        byte[] bytes = IOUtils.toByteArray(resource.getInputStream());
+
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.setContentType(MediaType.TEXT_HTML);
+        httpHeaders.setContentLength(bytes.length);
 
         return new ResponseEntity<>(bytes, httpHeaders, HttpStatus.OK);
     }
