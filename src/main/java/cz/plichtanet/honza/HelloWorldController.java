@@ -1,6 +1,7 @@
 package cz.plichtanet.honza;
 
 import com.itextpdf.text.DocumentException;
+import cz.plichtanet.honza.dao.IUserDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.ResourcePatternResolver;
@@ -8,6 +9,13 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,7 +30,9 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 @Controller
 public class HelloWorldController {
@@ -34,6 +44,9 @@ public class HelloWorldController {
 
     @Autowired
     private JendaS3Folder s3Folder;
+
+    @Autowired
+    private IUserDao userDao;
 
     @RequestMapping(value = "/login", method = RequestMethod.GET)
     public ModelAndView login(@RequestParam(value = "error", required = false) String error,
@@ -51,6 +64,43 @@ public class HelloWorldController {
 
         return model;
 
+    }
+
+    @RequestMapping(value = "/changePassword", method = RequestMethod.GET)
+    public String changePassword() {
+        return "changePassword";
+    }
+
+    @RequestMapping(value = "/changePassword", method = RequestMethod.POST)
+    public String changePassword(@RequestParam String password, @RequestParam String password1, @RequestParam String password2) {
+        if (!password1.equals(password2)) {
+            throw new BadCredentialsException("New passwords is not same.");
+
+        }
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        // update database with new role
+        userDao.changePassword(auth.getName(), password, password1);
+
+        return "welcome"; // TODO forward to wanted URL
+    }
+
+    @RequestMapping(value = "/addRole", method = RequestMethod.GET)
+    public String addRole() {
+        addRole("ROLE_USER");
+
+        return "welcome"; // TODO forward to wanted URL
+    }
+
+    private void addRole(String role) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        // update database with new role
+        userDao.addRole(auth.getName(), role);
+
+        // update the current Authentication
+        List<GrantedAuthority> authorities = new ArrayList<>(auth.getAuthorities());
+        authorities.add(new SimpleGrantedAuthority(role));
+        Authentication newAuth = new UsernamePasswordAuthenticationToken(auth.getPrincipal(),auth.getCredentials(),authorities);
+        SecurityContextHolder.getContext().setAuthentication(newAuth);
     }
 
     @RequestMapping(value = "/helloagain", method = RequestMethod.GET)
@@ -103,4 +153,20 @@ public class HelloWorldController {
     }
 
 
+    //for 403 access denied page
+    @RequestMapping(value = "/403", method = RequestMethod.GET)
+    public ModelAndView accessDenied() {
+
+        ModelAndView model = new ModelAndView();
+
+        //check if user is login
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (!(auth instanceof AnonymousAuthenticationToken)) {
+            model.addObject("username", auth.getName());
+        }
+
+        model.setViewName("403");
+        return model;
+
+    }
 }
