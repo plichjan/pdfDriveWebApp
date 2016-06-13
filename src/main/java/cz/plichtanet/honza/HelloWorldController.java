@@ -3,6 +3,7 @@ package cz.plichtanet.honza;
 import com.amazonaws.util.IOUtils;
 import com.itextpdf.text.DocumentException;
 import cz.plichtanet.honza.dao.IUserDao;
+import cz.plichtanet.honza.service.IAfterLoginUrl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.ResourcePatternResolver;
@@ -29,26 +30,31 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
+import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+@SuppressWarnings("SpringMVCViewInspection")
 @Controller
 public class HelloWorldController {
     private static final String DOWNLOAD = "/download/";
     private static final String HTML = "/html/";
-    private static final String S3_PDF_DRIVE_ROOT = "s3://pdf-drive-root/";
+    private static final String PDF_DRIVE_ROOT = "/home/ec2-user/pdf-drive-root/";
+    private static final String FILE_PDF_DRIVE_ROOT = "file://" + PDF_DRIVE_ROOT;
 
     @Autowired
     private ResourcePatternResolver resourcePatternResolver;
 
     @Autowired
-    private JendaS3Folder s3Folder;
+    private IUserDao userDao;
 
     @Autowired
-    private IUserDao userDao;
+    private IAfterLoginUrl afterLoginUrl;
 
     @RequestMapping(value = "/login", method = RequestMethod.GET)
     public ModelAndView login(@RequestParam(value = "error", required = false) String error,
@@ -83,14 +89,20 @@ public class HelloWorldController {
         // update database with new role
         userDao.changePassword(auth.getName(), password, password1);
 
-        return "welcome"; // TODO forward to wanted URL
+        addRole("ROLE_USER");
+        return "redirect:" + afterLoginUrl.getUrl();
     }
 
-    @RequestMapping(value = "/addRole", method = RequestMethod.GET)
-    public String addRole() {
-        addRole("ROLE_USER");
+    @RequestMapping(value = "/nda", method = RequestMethod.GET)
+    public String nda() {
+        return "NDA";
+    }
 
-        return "welcome"; // TODO forward to wanted URL
+    @RequestMapping(value = "/nda", params = "status=ok", method = RequestMethod.GET)
+    public String addRolePdfUser() {
+        addRole("ROLE_PDF_USER");
+
+        return "redirect:" + afterLoginUrl.getUrl();
     }
 
     private void addRole(String role) {
@@ -113,27 +125,39 @@ public class HelloWorldController {
 
     @RequestMapping(value = "/pdfs", method = RequestMethod.GET)
     public String showAllPdfs(ModelMap model) throws IOException {
-        model.addAttribute("pdfs", this.resourcePatternResolver.getResources(S3_PDF_DRIVE_ROOT + "**/*.pdf"));
+        model.addAttribute("pdfs", this.resourcePatternResolver.getResources(FILE_PDF_DRIVE_ROOT + "**/*.pdf"));
         return "pdfs";
     }
 
     @RequestMapping(value = "/dir", method = RequestMethod.GET)
-    public String showRootDir(HttpServletRequest request, ModelMap model) throws IOException {
-        model.addAttribute("dir", s3Folder.getFolderList(""));
+    public String showRootDir(HttpServletRequest request, ModelMap model) throws IOException, URISyntaxException {
+        model.addAttribute("dir", getSortedDirList(""));
+        model.addAttribute("parent", "");
+        model.addAttribute("root", PDF_DRIVE_ROOT);
         return "dir";
     }
 
     @RequestMapping(value = "/dir/**/", method = RequestMethod.GET)
-    public String showAllDir(HttpServletRequest request, ModelMap model) throws IOException {
+    public String showAllDir(HttpServletRequest request, ModelMap model) throws IOException, URISyntaxException {
         final String parent = decodePathSuffix(request, "/dir/");
-        model.addAttribute("dir", s3Folder.getFolderList(parent));
+        model.addAttribute("dir", getSortedDirList(parent));
+        model.addAttribute("parent", parent.endsWith("/") ? parent : (parent + "/"));
+        model.addAttribute("root", PDF_DRIVE_ROOT);
         return "dir";
+    }
+
+    private File[] getSortedDirList(String parent) throws URISyntaxException {
+        File[] files = new File(new File(new URI(FILE_PDF_DRIVE_ROOT)), parent).listFiles();
+        if (files != null) {
+            Arrays.sort(files);
+        }
+        return files;
     }
 
     @RequestMapping(value = DOWNLOAD + "**/*.pdf", method = RequestMethod.GET)
     public ResponseEntity<byte[]> download(HttpServletRequest request) throws IOException, DocumentException {
         String filename = decodePathSuffix(request, DOWNLOAD);
-        Resource resource = this.resourcePatternResolver.getResource(S3_PDF_DRIVE_ROOT + filename);
+        Resource resource = this.resourcePatternResolver.getResource(FILE_PDF_DRIVE_ROOT + filename);
 
         ByteArrayOutputStream dst = new ByteArrayOutputStream();
         String text = String.format("IP: %2$s, uzivatel: %3$s, %1$tF %1$tT %1$tz", new Date(), request.getRemoteAddr(), request.getRemoteUser());
@@ -171,13 +195,24 @@ public class HelloWorldController {
 
     //for 403 access denied page
     @RequestMapping(value = "/403", method = RequestMethod.GET)
-    public ModelAndView accessDenied() {
+    public ModelAndView accessDenied(HttpServletRequest request) throws UnsupportedEncodingException {
 
         ModelAndView model = new ModelAndView();
 
         //check if user is login
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if (!(auth instanceof AnonymousAuthenticationToken)) {
+            String url = decodePathSuffix(request, "");
+            if (!request.isUserInRole("ROLE_USER")) {
+                afterLoginUrl.setUrl(url);
+                model.setViewName("changePassword");
+                return model;
+            }
+
+            if (url != null && url.startsWith("/download/")) {
+                model.setViewName("forward:/nda");
+                return model;
+            }
             model.addObject("username", auth.getName());
         }
 

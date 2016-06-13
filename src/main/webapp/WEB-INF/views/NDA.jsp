@@ -12,27 +12,42 @@
 </head>
 <body>
 <div id="mainWrapper">
-    Dohoda o mlčenlivosti, ochraně informací a zákazu jejich zneužití
+    <div class="login-container">
 
-    Článek I.
-    1.	Účelem této Dohody je ochrana důvěrných informací Společenství pro dům Rezlerova 285 až 288, IČ 24683060 (dále jen „SVJ“), se kterými se uživatel seznámí na těch webových stránkách.
-    2.	Předmětem této Dohody je bližší vymezení důvěrných informaci a převzetí závazku uživatele zachovat o těchto důvěrných informacích mlčenlivost a nesdělit je ani neumožnit k nim přístup třetím osobám, nebo je nevyužít ve svůj prospěch nebo ve prospěch třetích osob, není-li v této Dohodě stanoveno jinak.
-    3.	Důvěrnými informacemi se pro účely této Dohody rozumí jakékoli a všechny skutečnosti, které se uživatel na těchto webových stránkách dozví (dále jen „Důvěrné informace“).
-    Článek II.
-    1.	Uživatel se zavazuje, že veškeré skutečnosti spadající mezi Důvěrné informace nebude dále rozšiřovat nebo reprodukovat a nezpřístupní je třetí straně. Současně se zavazuje, že zabezpečí, aby převzaté dokumenty a případné analýzy obsahující Důvěrné informace byly řádně evidovány. Uživatel se dále zavazuje, že Důvěrné informace nepoužije v rozporu s jejich účelem ani účelem jejich poskytnutí pro své potřeby nebo ve prospěch třetích osob.
-    2.	Uživatel přijme účinná opatření pro zamezení úniku informací.
-    3.	Povinnost plnit ustanovení této Dohody se nevztahuje na chráněné informace, které:
-    1.	mohou být zveřejněny bez porušení této smlouvy;
-    2.	byly písemným souhlasem provozovatele stránek uvolněny od těchto omezení;
-    3.	jsou veřejně dostupné nebo byly zveřejněny jinak, než porušením povinnosti jiného uživatele;
-    4.	uživatel je zná zcela prokazatelně dříve, než je získal na těchto webových stránkách;
-    5.	jsou vyžádány soudem, státním zastupitelstvím nebo věcně příslušným správním orgánem na základě zákona a jsou použity pouze k tomuto účelu.
-    4.	Veškeré informace poskytnuté na těchto webových stránkách jsou určeny pro interní potřebu SVJ a uživatel, jakožto člen SVJ, si je může vyžádat k nahlédnutí u výboru SVJ.
-    Článek III.
-    1.	Způsobí-li uživatel škodu SVJ porušením této smlouvy, odpovídá za ni dle obecných právních předpisů.
+    <h1>Dohoda o mlčenlivosti, ochraně informací a zákazu jejich zneužití</h1>
 
-    Kliknutím na odkaz „Souhlasím s dohodou“ se uživatel zavazuje k jejímu dodržování.
-    SOUHLASÍM S DOHODOU
+    <h2>Článek I.</h2>
+    <ol>
+        <li>Účelem této Dohody je ochrana důvěrných informací Společenství pro dům Rezlerova 285 až 288, IČ 24683060 (dále jen „SVJ“), se kterými se uživatel seznámí na těch webových stránkách.</li>
+        <li>Předmětem této Dohody je bližší vymezení důvěrných informaci a převzetí závazku uživatele zachovat o těchto důvěrných informacích mlčenlivost a nesdělit je ani neumožnit k nim přístup třetím osobám, nebo je nevyužít ve svůj prospěch nebo ve prospěch třetích osob, není-li v této Dohodě stanoveno jinak.</li>
+        <li>Důvěrnými informacemi se pro účely této Dohody rozumí jakékoli a všechny skutečnosti, které se uživatel na těchto webových stránkách dozví (dále jen „Důvěrné informace“).</li>
+    </ol>
+
+    <h2>Článek II.</h2>
+    <ol>
+        <li>Uživatel se zavazuje, že veškeré skutečnosti spadající mezi Důvěrné informace nebude dále rozšiřovat nebo reprodukovat a nezpřístupní je třetí straně. Současně se zavazuje, že zabezpečí, aby převzaté dokumenty a případné analýzy obsahující Důvěrné informace byly řádně evidovány. Uživatel se dále zavazuje, že Důvěrné informace nepoužije v rozporu s jejich účelem ani účelem jejich poskytnutí pro své potřeby nebo ve prospěch třetích osob.</li>
+        <li>Uživatel přijme účinná opatření pro zamezení úniku informací.</li>
+        <li>Povinnost plnit ustanovení této Dohody se nevztahuje na chráněné informace, které:
+            <ol>
+                <li>mohou být zveřejněny bez porušení této smlouvy;</li>
+                <li>byly písemným souhlasem provozovatele stránek uvolněny od těchto omezení;</li>
+                <li>jsou veřejně dostupné nebo byly zveřejněny jinak, než porušením povinnosti jiného uživatele;</li>
+                <li>uživatel je zná zcela prokazatelně dříve, než je získal na těchto webových stránkách;</li>
+                <li>jsou vyžádány soudem, státním zastupitelstvím nebo věcně příslušným správním orgánem na základě zákona a jsou použity pouze k tomuto účelu.</li>
+            </ol>
+        </li>
+        <li>Veškeré informace poskytnuté na těchto webových stránkách jsou určeny pro interní potřebu SVJ a uživatel, jakožto člen SVJ, si je může vyžádat k nahlédnutí u výboru SVJ.</li>
+    </ol>
+
+    <h2>Článek III.</h2>
+    <ol>
+        <li>Způsobí-li uživatel škodu SVJ porušením této smlouvy, odpovídá za ni dle obecných právních předpisů.</li>
+    </ol>
+
+    <p style="text-align: center; margin-top: 2em">Kliknutím na odkaz „Souhlasím s dohodou“ se uživatel zavazuje k jejímu dodržování.</p>
+    <p style="text-align: center"><a href="<c:url value="/nda?status=ok"/>">SOUHLASÍM S DOHODOU</a></p>
+
+    </div>
 </div>
 </body>
 </html>

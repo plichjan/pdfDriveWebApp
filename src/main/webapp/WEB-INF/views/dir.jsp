@@ -6,23 +6,29 @@
     <title>List of all PDF</title>
 </head>
 <body>
-<%--@elvariable id="dir" type="com.amazonaws.services.s3.model.ObjectListing"--%>
+<%--@elvariable id="root" type="java.lang.String"--%>
+<%--@elvariable id="parent" type="java.lang.String"--%>
+<%--@elvariable id="dir" type="java.util.List<java.io.File>"--%>
 <c:set var="prefix" value=""/>
 <c:url var="url" value="/dir/"/>
 <a href="${url}">.</a>
-<c:forTokens var="s" items="${dir.prefix}" delims="/">
+<c:forTokens var="s" items="${parent}" delims="/">
     <c:set var="prefix" value="${prefix}${s}/"/>
     <c:url var="url" value="/dir/${prefix}"/>
     / <a href="${url}">${s}</a>
 </c:forTokens>
 <ul>
-    <c:forEach var="prefix" items="${dir.commonPrefixes}">
-        <c:url var="url" value="/dir/${prefix}"/>
-    <li><a href="${url}">${fn:replace(prefix, dir.prefix, '')}</a></li>
+    <c:forEach var="file" items="${dir}">
+        <c:if test="${file.directory}">
+            <c:url var="url" value="/dir/${parent}${file.name}/"/>
+        <li><a href="${url}">${file.name}/</a></li>
+        </c:if>
     </c:forEach>
-    <c:forEach var="item" items="${dir.objectSummaries}">
-        <c:url var="url" value="/download/${item.key}"/>
-    <li><a href="${url}">${fn:replace(item.key, dir.prefix, '')}</a></li>
+    <c:forEach var="file" items="${dir}">
+        <c:if test="${file.file}">
+            <c:url var="url" value="/download/${parent}${file.name}"/>
+        <li><a href="${url}">${file.name}</a></li>
+        </c:if>
     </c:forEach>
 </ul>
 
