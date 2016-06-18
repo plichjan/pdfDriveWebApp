@@ -30,7 +30,7 @@ public class UserDao implements IUserDao {
 
     @Override
     public void addRole(String user, String role) {
-        template.update("insert into authorities (username, authority) values (?, ?)", user, role);
+        template.update("insert ignore into authorities (username, authority) values (?, ?)", user, role);
     }
 
     @Override
@@ -39,6 +39,11 @@ public class UserDao implements IUserDao {
         if (hash == null || !passwordEncoder.matches(oldPassword, hash)) {
             throw new BadCredentialsException("Old password is incorrect.");
         }
+        setPassword(user, password);
+    }
+
+    @Override
+    public void setPassword(String user, String password) {
         template.update("update users set password = ? where username = ?", passwordEncoder.encode(password), user);
     }
 

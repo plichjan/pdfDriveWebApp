@@ -10,6 +10,8 @@ public interface IUserDao {
 
     void changePassword(String user, String oldPassword, String password);
 
+    void setPassword(String user, String password);
+
     void addUser(String user, String password);
 
     String getPasswordHash(String user);

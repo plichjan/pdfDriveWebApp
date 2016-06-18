@@ -26,7 +26,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
@@ -88,10 +87,35 @@ public class HelloWorldController {
 
         }
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        // update database with new role
+        // update database password
         userDao.changePassword(auth.getName(), password, password1);
 
         addRole("ROLE_USER");
+        return "redirect:/";
+    }
+
+    @RequestMapping(value = "/setPassword", method = RequestMethod.GET)
+    public String setPassword() {
+        return "setPassword";
+    }
+
+    @RequestMapping(value = "/setPassword", method = RequestMethod.POST)
+    public String setPassword(@RequestParam String username, @RequestParam String password) {
+        // update user password
+        userDao.setPassword(username, password);
+        return "redirect:/";
+    }
+
+    @RequestMapping(value = "/addUser", method = RequestMethod.GET)
+    public String addUser() {
+        return "addUser";
+    }
+
+    @RequestMapping(value = "/addUser", method = RequestMethod.POST)
+    public String addUser(@RequestParam String username, @RequestParam String password) {
+        // update user password
+        userDao.addUser(username, password);
+        userDao.addRole(username, "ROLE_NIC");
         return "redirect:/";
     }
 
@@ -115,7 +139,7 @@ public class HelloWorldController {
         // update the current Authentication
         List<GrantedAuthority> authorities = new ArrayList<>(auth.getAuthorities());
         authorities.add(new SimpleGrantedAuthority(role));
-        Authentication newAuth = new UsernamePasswordAuthenticationToken(auth.getPrincipal(),auth.getCredentials(),authorities);
+        Authentication newAuth = new UsernamePasswordAuthenticationToken(auth.getPrincipal(), auth.getCredentials(), authorities);
         SecurityContextHolder.getContext().setAuthentication(newAuth);
     }
 

@@ -24,7 +24,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
             .authorizeRequests()
                 .antMatchers("/", "/robots.txt", "/index.jsp", "/.well-known/**", "/static/**").permitAll()
                 .antMatchers("/downloadPdf/**").hasRole("PDF_USER")
-                .antMatchers("/dir/**").hasRole("ADMIN")
+                .antMatchers("/dir/**", "/setPassword", "/addUser").hasRole("ADMIN")
                 .antMatchers("/helloagain").hasRole("ADMIN")
                 .anyRequest().authenticated()
                 .and()
