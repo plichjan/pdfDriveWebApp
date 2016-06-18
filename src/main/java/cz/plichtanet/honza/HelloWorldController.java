@@ -26,6 +26,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
@@ -34,8 +35,8 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
-import java.util.Arrays;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -43,6 +44,7 @@ import java.util.List;
 @Controller
 public class HelloWorldController {
     private static final String DOWNLOAD = "/download/";
+    private static final String DOWNLOAD_PDF = "/downloadPdf/";
     private static final String HTML = "/html/";
     private static final String PDF_DRIVE_ROOT = "/home/ec2-user/pdf-drive-root/";
     private static final String FILE_PDF_DRIVE_ROOT = "file://" + PDF_DRIVE_ROOT;
@@ -90,7 +92,7 @@ public class HelloWorldController {
         userDao.changePassword(auth.getName(), password, password1);
 
         addRole("ROLE_USER");
-        return "redirect:" + afterLoginUrl.getUrl();
+        return "redirect:/";
     }
 
     @RequestMapping(value = "/nda", method = RequestMethod.GET)
@@ -155,14 +157,28 @@ public class HelloWorldController {
     }
 
     @RequestMapping(value = DOWNLOAD + "**/*.pdf", method = RequestMethod.GET)
-    public ResponseEntity<byte[]> download(HttpServletRequest request) throws IOException, DocumentException {
-        String filename = decodePathSuffix(request, DOWNLOAD);
+    public String download(HttpServletRequest request) throws IOException, DocumentException {
+        String url = request.getServletPath().replace(DOWNLOAD, DOWNLOAD_PDF);
+        if (request.isUserInRole("PDF_USER")) {
+            return "forward:" + url;
+        } else {
+            afterLoginUrl.setUrl(url);
+            return "forward:/nda";
+        }
+    }
+
+    @RequestMapping(value = DOWNLOAD_PDF + "**/*.pdf", method = RequestMethod.GET)
+    public ResponseEntity<byte[]> downloadPdf(HttpServletRequest request) throws IOException, DocumentException {
+        String filename = decodePathSuffix(request, DOWNLOAD_PDF);
         Resource resource = this.resourcePatternResolver.getResource(FILE_PDF_DRIVE_ROOT + filename);
 
         ByteArrayOutputStream dst = new ByteArrayOutputStream();
-        String text = String.format("IP: %2$s, uzivatel: %3$s, %1$tF %1$tT %1$tz", new Date(), request.getRemoteAddr(), request.getRemoteUser());
+        String text = String.format("IP: %2$s\n%3$s\n%1$tF %1$tT %1$tz", new Date(), request.getRemoteAddr(), request.getRemoteUser());
         TransparentWatermark.manipulatePdf(resource.getInputStream(), dst, text);
         byte[] bytes = dst.toByteArray();
+
+        // log download
+        userDao.logDownload(request.getRemoteUser(), filename);
 
         String fileName = URLEncoder.encode(new File(filename).getName(), "UTF-8").replaceAll("\\+", "%20");
         HttpHeaders httpHeaders = new HttpHeaders();

@@ -23,7 +23,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         http
             .authorizeRequests()
                 .antMatchers("/", "/robots.txt", "/index.jsp", "/.well-known/**", "/static/**").permitAll()
-                .antMatchers("/download/**").hasRole("PDF_USER")
+                .antMatchers("/downloadPdf/**").hasRole("PDF_USER")
                 .antMatchers("/dir/**").hasRole("ADMIN")
                 .antMatchers("/helloagain").hasRole("ADMIN")
                 .anyRequest().authenticated()
@@ -47,7 +47,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         // pro lokalni testovani bez databaze
         auth
             .inMemoryAuthentication()
-                .withUser("jenda").password("604321192").roles("USER","ADMIN");
+                .withUser("jenda").password("604321192").roles("USER","PDF_USER","ADMIN");
 */
         PasswordEncoder encoder = passwordEncoder();
         auth.jdbcAuthentication().dataSource(dataSource).passwordEncoder(encoder)

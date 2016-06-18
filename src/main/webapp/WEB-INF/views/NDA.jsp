@@ -28,7 +28,7 @@
         <li>Uživatel se zavazuje, že veškeré skutečnosti spadající mezi Důvěrné informace nebude dále rozšiřovat nebo reprodukovat a nezpřístupní je třetí straně. Současně se zavazuje, že zabezpečí, aby převzaté dokumenty a případné analýzy obsahující Důvěrné informace byly řádně evidovány. Uživatel se dále zavazuje, že Důvěrné informace nepoužije v rozporu s jejich účelem ani účelem jejich poskytnutí pro své potřeby nebo ve prospěch třetích osob.</li>
         <li>Uživatel přijme účinná opatření pro zamezení úniku informací.</li>
         <li>Povinnost plnit ustanovení této Dohody se nevztahuje na chráněné informace, které:
-            <ol>
+            <ol type="a">
                 <li>mohou být zveřejněny bez porušení této smlouvy;</li>
                 <li>byly písemným souhlasem provozovatele stránek uvolněny od těchto omezení;</li>
                 <li>jsou veřejně dostupné nebo byly zveřejněny jinak, než porušením povinnosti jiného uživatele;</li>

@@ -15,12 +15,17 @@ import javax.sql.DataSource;
 public class UserDao implements IUserDao {
     private JdbcTemplate template;
 
-//    @Autowired //TODO uncomment until get changes from notebook
-    private PasswordEncoder passwordEncoder = null;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     @Autowired
     public UserDao(DataSource dataSource) {
         template = new JdbcTemplate(dataSource);
+    }
+
+    @Override
+    public void logDownload(String user, String uri) {
+        template.update("insert into download_log (username, uri) values (?, ?)", user, uri);
     }
 
     @Override
@@ -35,6 +40,11 @@ public class UserDao implements IUserDao {
             throw new BadCredentialsException("Old password is incorrect.");
         }
         template.update("update users set password = ? where username = ?", passwordEncoder.encode(password), user);
+    }
+
+    @Override
+    public void addUser(String user, String password) {
+        template.update("insert users (username, password, enabled) values (?, ?, 1)", user, passwordEncoder.encode(password));
     }
 
     @Override
