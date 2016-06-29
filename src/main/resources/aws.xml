@@ -28,5 +28,9 @@
             password="${db.password}"
             read-replica-support="true"
     >
+        <jdbc:pool-attributes
+                testOnBorrow="true"
+                validationQuery="SELECT 1"
+        />
     </jdbc:data-source>
 </beans>
