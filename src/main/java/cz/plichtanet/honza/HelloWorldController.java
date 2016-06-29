@@ -34,10 +34,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 @SuppressWarnings("SpringMVCViewInspection")
 @Controller
@@ -125,10 +122,24 @@ public class HelloWorldController {
     }
 
     @RequestMapping(value = "/nda", params = "status=ok", method = RequestMethod.GET)
-    public String addRolePdfUser() {
+    public String addRolePdfUser() throws UnsupportedEncodingException {
         addRole("ROLE_PDF_USER");
 
-        return "redirect:" + afterLoginUrl.getUrl();
+        StringBuilder sb = new StringBuilder();
+        String delimiter = "";
+        for (String s : afterLoginUrl.getUrl().split("/")) {
+            sb.append(delimiter).append(encode(s));
+            delimiter = "/";
+        }
+        return "redirect:" + sb;
+    }
+
+    public static String encode(String s) {
+        try {
+            return URLEncoder.encode(s, "UTF-8");
+        } catch (UnsupportedEncodingException ignored) {
+            return null;
+        }
     }
 
     private void addRole(String role) {
